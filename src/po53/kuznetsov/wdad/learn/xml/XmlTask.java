@@ -3,11 +3,16 @@ package po53.kuznetsov.wdad.learn.xml;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
+import javax.print.Doc;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.*;
 import java.io.IOException;
+import java.lang.annotation.Documented;
 import java.time.LocalDate;
 
 public class XmlTask {
@@ -63,7 +68,8 @@ public class XmlTask {
     }
 
     public void setTariff(String tariffName, double newValue) {
-
+        getTariffs().getNamedItem(tariffName).setNodeValue(Double.toString(newValue));
+        rewriteXML();
     }
 
     public void addRegistration(String street, int buildingNumber, int flatNumber, int Year, int month,
@@ -133,5 +139,32 @@ public class XmlTask {
 
     private String getRegistrationSearchExpression(int month, int year) {
         return String.format("registration[@month=\"%d\"][@year=\"%d\"]", month, year);
+    }
+
+    private void rewriteXML() {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            DOMSource source = new DOMSource(document);
+            StreamResult out_stream = new StreamResult(filename);
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+
+            DocumentType documentType = document.getDoctype();
+            String systemID = documentType.getSystemId();
+            String publicID = documentType.getPublicId();
+            String res = publicID + "\" \"" + systemID;
+            transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, res);
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount","2");
+                    transformer.transform(source, out_stream);
+        } catch (ParserConfigurationException e) {
+            System.err.println(e.getMessage());
+        } catch (TransformerConfigurationException e) {
+            System.err.println(e.getMessage());
+        } catch (TransformerException e) {
+            System.err.println(e.getMessage());
+        }
     }
 }

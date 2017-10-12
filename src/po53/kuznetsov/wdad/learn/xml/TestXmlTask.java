@@ -5,11 +5,17 @@ public class TestXmlTask {
         String filename = "out\\production\\starting-monkey-to-human-path" +
                 "\\po53\\kuznetsov\\wdad\\learn\\xml\\validXml.xml";
         getBillTest(filename);
+        setTariffTest(filename);
     }
 
     private static void getBillTest(String filename){
         XmlTask task = new XmlTask(filename);
         double bill = task.getBill("someStreet",5,1);
         System.out.println(bill);
+    }
+
+    private static void setTariffTest(String filename){
+        XmlTask task = new XmlTask(filename);
+        task.setTariff("gas", 500);
     }
 }
