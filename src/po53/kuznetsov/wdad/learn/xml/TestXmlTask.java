@@ -10,11 +10,11 @@ public class TestXmlTask {
                 "\\po53\\kuznetsov\\wdad\\learn\\xml\\validXml.xml";
         String invalidXml = "out\\production\\starting-monkey-to-human-path" +
                 "\\po53\\kuznetsov\\wdad\\learn\\xml\\invalidXml.xml";
-        getBillTest(validXml);
+        getBillTest(validXml, "someStreet",5, 1);
         setTariffTest(validXml);
         addRegistrationTest(validXml);
-        testForExceptionsThrowing(() -> getBillTest(invalidXml));
-
+        testForExceptionsThrowing(() -> getBillTest(invalidXml, "someStreet",5, 1));
+        testForExceptionsThrowing(() -> getBillTest(validXml,"someStreet", 10,1 ));
     }
 
     private static void testForExceptionsThrowing(Task task) {
@@ -27,10 +27,9 @@ public class TestXmlTask {
         assert throwed : "Exception was not throwed";
     }
 
-    private static void getBillTest(String filename) {
+    private static void getBillTest(String filename,String street, int buildingNumber, int flatNumber) {
         XmlTask task = new XmlTask(filename);
-        double bill = task.getBill("someStreet", 5, 1);
-        System.out.println(bill);
+        double bill = task.getBill("someStreet", buildingNumber, flatNumber);
     }
 
     private static void setTariffTest(String filename) {

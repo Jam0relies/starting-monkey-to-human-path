@@ -172,11 +172,6 @@ public class XmlTask {
 
 
     private void rewriteXML() {
-        /*
-        Transformer transformer = null;
-        DOMSource src = null;
-        FileOutputStream fos = null;
-        */
         try {
             if(TRANSFORMER == null) {
                 TRANSFORMER = TransformerFactory.newInstance().newTransformer();
