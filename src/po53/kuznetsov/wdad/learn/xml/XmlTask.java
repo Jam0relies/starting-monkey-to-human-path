@@ -50,8 +50,8 @@ public class XmlTask {
         }
     }
 
-    private static DocumentBuilder getBuilder()throws ParserConfigurationException{
-        if(BUILDER ==null) {
+    private static DocumentBuilder getBuilder() throws ParserConfigurationException {
+        if (BUILDER == null) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setValidating(true);
             factory.setIgnoringElementContentWhitespace(true); // prevents adding extra whitespaces with every rewrite
@@ -65,6 +65,9 @@ public class XmlTask {
 
         Node building = getUniqueNode(getBuildingExpression(street, buildingNumber), document);
         Node flat = getUniqueNode(getFlatSearchExpression(flatNumber), building);
+        if (flat == null) {
+            throw flatNotFoundException(street, buildingNumber, flatNumber);
+        }
 
         LocalDate now = LocalDate.now();
         Node thisMonthRegistration = getUniqueNode(getRegistrationSearchExpression(now.getMonthValue(), now.getYear()), flat);
@@ -94,15 +97,19 @@ public class XmlTask {
                 flat.removeChild(oldRegistration);
             }
             flat.appendChild(registration(Year, month, coldWater, hotWater, electricity, gas));
-        }catch (NullPointerException e){
-            NoSuchElementException newException = new NoSuchElementException(
-                    String.format("No flat with address: street- %s, building number- %d, " +
-                            "flat number-%d,",street, buildingNumber,flatNumber));
+        } catch (NullPointerException e) {
+            NoSuchElementException newException = flatNotFoundException(street, buildingNumber, flatNumber);
             newException.addSuppressed(e);
-            throw  newException;
+            throw newException;
         }
 
         rewriteXML();
+    }
+
+    NoSuchElementException flatNotFoundException(String street, int buildingNumber, int flatNumber) {
+        return new NoSuchElementException(
+                String.format("No flat with address: street- %s, building number- %d, " +
+                        "flat number-%d,", street, buildingNumber, flatNumber));
     }
 
     private NamedNodeMap getTariffs() {
@@ -168,7 +175,7 @@ public class XmlTask {
 
     private void rewriteXML() {
         try {
-            if(TRANSFORMER == null) {
+            if (TRANSFORMER == null) {
                 TRANSFORMER = TransformerFactory.newInstance().newTransformer();
             }
             DOMSource src = new DOMSource(document);
