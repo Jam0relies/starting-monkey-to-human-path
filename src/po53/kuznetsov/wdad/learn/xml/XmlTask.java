@@ -45,11 +45,7 @@ public class XmlTask {
         this.filename = filename;
         try {
             document = getBuilder().parse(filename);
-        } catch (ParserConfigurationException e) {
-            System.err.println(e.getMessage());
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        } catch (SAXException e) {
+        } catch (ParserConfigurationException | IOException | SAXException e) {
             System.err.println(e.getMessage());
         }
     }
@@ -58,8 +54,7 @@ public class XmlTask {
         if(BUILDER ==null) {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setValidating(true);
-            //prevents adding extra whitespaces with every rewrite
-            factory.setIgnoringElementContentWhitespace(true);
+            factory.setIgnoringElementContentWhitespace(true); // prevents adding extra whitespaces with every rewrite
             BUILDER = factory.newDocumentBuilder();
         }
         return BUILDER;
@@ -186,9 +181,7 @@ public class XmlTask {
             TRANSFORMER.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             document.normalizeDocument();
             TRANSFORMER.transform(src, result);
-        } catch (TransformerException e) {
-            e.printStackTrace(System.out);
-        } catch (IOException e) {
+        } catch (TransformerException | IOException e) {
             e.printStackTrace(System.out);
         }
 
