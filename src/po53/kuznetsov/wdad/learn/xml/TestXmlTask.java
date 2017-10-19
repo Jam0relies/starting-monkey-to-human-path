@@ -1,12 +1,30 @@
 package po53.kuznetsov.wdad.learn.xml;
 
 public class TestXmlTask {
+    interface Task {
+        void perform() throws Exception;
+    }
+
     public static void main(String[] args) {
-        String filename = "out\\production\\starting-monkey-to-human-path" +
+        String validXml = "out\\production\\starting-monkey-to-human-path" +
                 "\\po53\\kuznetsov\\wdad\\learn\\xml\\validXml.xml";
-        getBillTest(filename);
-        setTariffTest(filename);
-        addRegistrationTest(filename);
+        String invalidXml = "out\\production\\starting-monkey-to-human-path" +
+                "\\po53\\kuznetsov\\wdad\\learn\\xml\\invalidXml.xml";
+        getBillTest(validXml);
+        setTariffTest(validXml);
+        addRegistrationTest(validXml);
+        testForExceptionsThrowing(() -> getBillTest(invalidXml));
+
+    }
+
+    private static void testForExceptionsThrowing(Task task) {
+        boolean throwed = false;
+        try {
+            task.perform();
+        } catch (Exception e) {
+            throwed = true;
+        }
+        assert throwed : "Exception was not throwed";
     }
 
     private static void getBillTest(String filename) {

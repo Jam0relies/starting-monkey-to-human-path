@@ -16,6 +16,7 @@ import javax.xml.xpath.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 
 public class XmlTask {
     private static final String[] TARIFFS_KEYS = new String[]{"coldwater", "hotwater", "electricity", "gas"};
@@ -24,6 +25,7 @@ public class XmlTask {
     private static XPathExpression X_PATH_TARIFFS_EXPRESSION;
     private static XPath XPATH;
     private static DocumentBuilder BUILDER;
+    private static Transformer TRANSFORMER;
 
     static {
         try {
@@ -92,10 +94,18 @@ public class XmlTask {
         Node flat = getUniqueNode(getFlatSearchExpression(flatNumber), building);
 
         Node oldRegistration = getUniqueNode(getRegistrationSearchExpression(month, Year), flat);
-        if (oldRegistration != null) {
-            flat.removeChild(oldRegistration);
+        try {
+            if (oldRegistration != null) {
+                flat.removeChild(oldRegistration);
+            }
+            flat.appendChild(registration(Year, month, coldWater, hotWater, electricity, gas));
+        }catch (NullPointerException e){
+            NoSuchElementException newException = new NoSuchElementException(
+                    String.format("No flat with address: street- %s, building number- %d, " +
+                            "flat number-%d,",street, buildingNumber,flatNumber));
+            newException.addSuppressed(e);
+            throw  newException;
         }
-        flat.appendChild(registration(Year, month, coldWater, hotWater, electricity, gas));
 
         rewriteXML();
     }
@@ -162,56 +172,31 @@ public class XmlTask {
 
 
     private void rewriteXML() {
+        /*
         Transformer transformer = null;
         DOMSource src = null;
         FileOutputStream fos = null;
+        */
         try {
-            transformer = TransformerFactory.newInstance().newTransformer();
-            src = new DOMSource(document);
-            fos = new FileOutputStream(filename);
+            if(TRANSFORMER == null) {
+                TRANSFORMER = TransformerFactory.newInstance().newTransformer();
+            }
+            DOMSource src = new DOMSource(document);
+            FileOutputStream fos = new FileOutputStream(filename);
 
             StreamResult result = new StreamResult(fos);
-            transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "housekeeper.dtd");
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            TRANSFORMER.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "housekeeper.dtd");
+            TRANSFORMER.setOutputProperty(OutputKeys.METHOD, "xml");
+            TRANSFORMER.setOutputProperty(OutputKeys.INDENT, "yes");
+            TRANSFORMER.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             document.normalizeDocument();
-            transformer.transform(src, result);
+            TRANSFORMER.transform(src, result);
         } catch (TransformerException e) {
             e.printStackTrace(System.out);
         } catch (IOException e) {
             e.printStackTrace(System.out);
         }
-        /*
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            DOMSource source = new DOMSource(document);
-            StreamResult out_stream = new StreamResult(filename);
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
 
-            DocumentType documentType = document.getDoctype();
-            /*
-            String systemID = documentType.getSystemId();
-            String publicID = documentType.getPublicId();
-            String res = publicID + "\" \"" + systemID;
-            transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,res);
-
-            transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "housekeeper.dtd");
-
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            transformer.transform(source, out_stream);
-        } catch (ParserConfigurationException e) {
-            System.err.println(e.getMessage());
-        } catch (TransformerConfigurationException e) {
-            System.err.println(e.getMessage());
-        } catch (TransformerException e) {
-            System.err.println(e.getMessage());
-        }
-        */
     }
 
     private Node registration(int year, int month, double coldWater, double hotWater, double electricity, double gas) {
