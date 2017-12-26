@@ -38,7 +38,7 @@ public class TestXmlTask {
 
     private static void getBillTest(double expectedValue, String filename, String street, int buildingNumber, int flatNumber) {
         XmlTask task = new XmlTask(filename);
-        double bill = task.getBill("someStreet", buildingNumber, flatNumber);
+        double bill = task.getBill(street, buildingNumber, flatNumber);
         if (bill != expectedValue) {
             throw new RuntimeException(String.format("Wrong bill. Expected: %f, actual: %f", expectedValue, bill));
         }

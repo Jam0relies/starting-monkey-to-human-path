@@ -11,13 +11,13 @@
                 <electricity>0</electricity>
                 <gas>0</gas>
             </registration>
-            <registration month="9" year="2017" >
+            <registration month="11" year="2017" >
                 <coldwater>2</coldwater>
                 <hotwater>5</hotwater>
                 <electricity>3</electricity>
                 <gas>4</gas>
             </registration>
-            <registration month="10" year="2017">
+            <registration month="12" year="2017">
                 <coldwater>5</coldwater>
                 <hotwater>6</hotwater>
                 <electricity>4</electricity>
