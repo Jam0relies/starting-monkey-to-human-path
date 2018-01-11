@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE housekeeper SYSTEM "housekeeper.dtd">
+<housekeeper>
+    <tariffs coldwater="1" hotwater="1" electricity="1" gas="1"></tariffs>
+
+    <building street="someStreet" number="5" flatsquantity="1">
+        <flat number="1" area="5">
+            <registration month="8" year="2016">
+                <coldwater>0</coldwater>
+                <hotwater>0</hotwater>
+                <electricity>0</electricity>
+                <gas>0</gas>
+            </registration>
+            <registration month="11" year="2017" >
+                <coldwater>2</coldwater>
+                <hotwater>5</hotwater>
+                <electricity>3</electricity>
+                <gas>4</gas>
+            </registration>
+            <registration month="12" year="2017">
+                <coldwater>5</coldwater>
+                <hotwater>6</hotwater>
+                <electricity>4</electricity>
+                <gas>5</gas>
+            </registration>
+        </flat>
+    </building>
+</housekeeper>
