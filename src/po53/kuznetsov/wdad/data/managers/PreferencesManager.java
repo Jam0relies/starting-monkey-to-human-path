@@ -1,9 +1,6 @@
 package po53.kuznetsov.wdad.data.managers;
 
 import org.w3c.dom.*;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -19,14 +16,14 @@ import javax.xml.xpath.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+import static po53.kuznetsov.wdad.utils.PreferencesConstantManager.*;
 
 public class PreferencesManager {
     private static final String FILENAME = "out\\production\\starting-monkey-to-human-path" +
             "\\po53\\kuznetsov\\wdad\\resources\\configuration\\appconfig.xml";
     private static PreferencesManager INSTANCE = new PreferencesManager();
-    private static XPath XPATH;
     private static XPathExpression CLASS_PROVIDER_EXPRESSION;
     private static XPathExpression RMI_EXPRESSION;
     private static XPathExpression CREATE_REGISTRY_EXPRESSION;
@@ -37,12 +34,16 @@ public class PreferencesManager {
     private static XPathExpression USE_CODEBASE_ONLY_EXPRESSION;
     private static XPathExpression BINDED_OBJECTS_EXPRESSION;
     private static XPathExpression SERVER_EXPRESSION;
+    private static XPathExpression FIRST_SERVER_CREATE_REGISTRY_EXPRESSION;
+    private static XPathExpression FIRST_SERVER_REGISTRY_ADDRESS_EXPRESSION;
+    private static XPathExpression FIRST_SERVER_REGISTRY_PORT_EXPRESSION;
     private static Transformer TRANSFORMER;
+    private static Map<String, XPathExpression> xPathExpressions;
 
     static {
         try {
             XPathFactory factory = XPathFactory.newInstance();
-            XPATH = factory.newXPath();
+            XPath XPATH = factory.newXPath();
             CLASS_PROVIDER_EXPRESSION = XPATH.compile("/appconfig/rmi/classprovider");
             RMI_EXPRESSION = XPATH.compile("/appconfig/rmi");
             CREATE_REGISTRY_EXPRESSION = XPATH.compile("createregistry");
@@ -52,9 +53,22 @@ public class PreferencesManager {
             POLICY_PATH_EXPRESSION = XPATH.compile("/appconfig/rmi/client/policypath");
             USE_CODEBASE_ONLY_EXPRESSION = XPATH.compile("/appconfig/rmi/client/usecodebaseonly");
             BINDED_OBJECTS_EXPRESSION = XPATH.compile("/appconfig/rmi/server/bindedobject");
-            //NAME_EXPRESSION = XPATH.compile("/name");
-            //CLASS_EXPRESSION = XPATH.compile("/class");
             SERVER_EXPRESSION = XPATH.compile("/appconfig/rmi/server[1]");
+
+            FIRST_SERVER_CREATE_REGISTRY_EXPRESSION = XPATH
+                    .compile("/appconfig/rmi/server[1]/registry/createregistry/text()");
+            FIRST_SERVER_REGISTRY_ADDRESS_EXPRESSION = XPATH
+                    .compile("/appconfig/rmi/server[1]/registry/registryaddress/text()");
+            FIRST_SERVER_REGISTRY_PORT_EXPRESSION = XPATH
+                    .compile("/appconfig/rmi/server[1]/registry/registryPort/text()");
+
+            xPathExpressions = new HashMap<>();
+            xPathExpressions.put(CREATE_REGISTRY, FIRST_SERVER_CREATE_REGISTRY_EXPRESSION);
+            xPathExpressions.put(REGISTRY_ADDRESS, FIRST_SERVER_REGISTRY_ADDRESS_EXPRESSION);
+            xPathExpressions.put(REGISTRY_PORT, FIRST_SERVER_REGISTRY_PORT_EXPRESSION);
+            xPathExpressions.put(POLICYPATH, POLICY_PATH_EXPRESSION);
+            xPathExpressions.put(USE_CODE_BASEONLY, USE_CODEBASE_ONLY_EXPRESSION);
+            xPathExpressions.put(CLASS_PROVIDER, CLASS_PROVIDER_EXPRESSION);
         } catch (XPathExpressionException e) {
             System.err.println(e.getMessage());
         }
@@ -79,16 +93,69 @@ public class PreferencesManager {
         return INSTANCE;
     }
 
+    public void setProperty(String key, String value) {
+        getNode(xPathExpressions.get(key)).setTextContent(value);
+    }
+
+    public String getProperty(String key) {
+        try {
+            return (String) xPathExpressions.get(key).evaluate(document, XPathConstants.STRING);
+        } catch (XPathExpressionException e) {
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public void setProperties(Properties prop) {
+        prop.forEach((key, value) -> setProperty((String) key, (String) value));
+    }
+
+    public Properties getProperties() {
+        Properties properties = new Properties();
+        xPathExpressions.forEach((key, value) -> properties.put(key, getProperty(key)));
+        return properties;
+    }
+
+    public void addBindedObject(String name, String className) {
+        Node serverNode = getNode(SERVER_EXPRESSION);
+        Element node = document.createElement("bindedobject");
+        node.setAttribute("class", className);
+        node.setAttribute("name", name);
+        serverNode.appendChild(node);
+        rewriteXML();
+    }
+
+    public void removeBindedObject(String name) {
+        NodeList nodes = getNodes(BINDED_OBJECTS_EXPRESSION);
+        boolean remooved = false;
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            NamedNodeMap attributes = node.getAttributes();
+            if (attributes.getNamedItem("name").getNodeValue().equals(name)) {
+                Node serverNode = getNode(SERVER_EXPRESSION);
+                serverNode.removeChild(node);
+                remooved = true;
+                break;
+            }
+        }
+        if (remooved) {
+            rewriteXML();
+        }
+    }
+
+
+    @Deprecated
     public boolean hasClassProvider() {
         Node classProvider = getNode(CLASS_PROVIDER_EXPRESSION);
         return classProvider != null && classProvider.getTextContent().length() > 0;
     }
 
-
+    @Deprecated
     public String getClassProvider() {
         return getNode(CLASS_PROVIDER_EXPRESSION).getTextContent();
     }
 
+    @Deprecated
     public String setClassProvider(String value) {
         if (!hasClassProvider()) {
             try {
@@ -103,12 +170,14 @@ public class PreferencesManager {
         return null;
     }
 
+    @Deprecated
     public void addRegistry(Registry registry) {
         Node serverNode = getNode(SERVER_EXPRESSION);
         serverNode.appendChild(registryToNode(registry));
         rewriteXML();
     }
 
+    @Deprecated
     public boolean removeRegistry(Registry registry) {
         NodeList registriesNodes = getNodes(REGISTRIES_EXPRESSION);
         int registriesNodesLength = registriesNodes.getLength();
@@ -124,24 +193,29 @@ public class PreferencesManager {
         return false;
     }
 
+    @Deprecated
     public String getPolicyPath() {
         return getNode(POLICY_PATH_EXPRESSION).getTextContent();
     }
 
+    @Deprecated
     public void setPolicyPath(String policyPath) {
         getNode(POLICY_PATH_EXPRESSION).setTextContent(policyPath);
         rewriteXML();
     }
 
+    @Deprecated
     public boolean isUseCodebaseOnly() {
         return booleanFromString(getNode(USE_CODEBASE_ONLY_EXPRESSION).getTextContent());
     }
 
+    @Deprecated
     public void setUseCodebaseOnly(boolean value) {
         getNode(USE_CODEBASE_ONLY_EXPRESSION).setTextContent(booleanToString(value));
         rewriteXML();
     }
 
+    @Deprecated
     public List<Registry> getRegistries() {
         NodeList registriesNodes = getNodes(REGISTRIES_EXPRESSION);
         int quantity = registriesNodes.getLength();
@@ -156,6 +230,7 @@ public class PreferencesManager {
         return registries;
     }
 
+    @Deprecated
     public List<BindedObject> getBindedObjects() {
         NodeList bindedObjectsNodes = getNodes(BINDED_OBJECTS_EXPRESSION);
         int quantity = bindedObjectsNodes.getLength();
@@ -170,6 +245,7 @@ public class PreferencesManager {
         return bindedObjects;
     }
 
+    @Deprecated
     public List<BindedObject> getBindedObjects(Registry registry) {
         List<BindedObject> bindedObjects = new ArrayList<>();
         Node serverNode = getNode(SERVER_EXPRESSION);
@@ -191,6 +267,7 @@ public class PreferencesManager {
         return bindedObjects;
     }
 
+    @Deprecated
     public void addBindedObject(Registry registry, BindedObject bindedObject) {
         Node serverNode = getNode(SERVER_EXPRESSION);
         NodeList serverNodeChildNodes = serverNode.getChildNodes();
@@ -221,6 +298,7 @@ public class PreferencesManager {
         rewriteXML();
     }
 
+    @Deprecated
     public boolean removeBindedObject(BindedObject bindedObject) {
         NodeList nodes = getNodes(BINDED_OBJECTS_EXPRESSION);
         String exampleName = bindedObject.getName();
@@ -322,9 +400,9 @@ public class PreferencesManager {
             writer.write("\" encoding=\"");
             writer.write(document.getXmlEncoding());
             writer.write("\" ?>\n" +
-                    "<!DOCTYPE appconfig [\n");
-            writer.write(docType.getInternalSubset());
-            writer.write("]>\n");
+                    "<!DOCTYPE appconfig [\n" +
+                    docType.getInternalSubset() +
+                    "]>\n");
             writer.flush();
 
             StreamResult result = new StreamResult(fos);
@@ -333,6 +411,5 @@ public class PreferencesManager {
         } catch (TransformerException | IOException e) {
             e.printStackTrace(System.out);
         }
-
     }
 }
