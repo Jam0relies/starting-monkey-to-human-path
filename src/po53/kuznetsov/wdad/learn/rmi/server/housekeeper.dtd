@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!ELEMENT housekeeper (tariffs,
+                building*)>
+        <!ELEMENT tariffs EMPTY>
+        <!ELEMENT building (flat+)>
+        <!ELEMENT flat (registration*)>
+        <!ELEMENT registration (coldwater?,
+                hotwater?, electricity?, gas?)>
+        <!ELEMENT coldwater (#PCDATA)>
+        <!ELEMENT hotwater (#PCDATA)>
+        <!ELEMENT electricity (#PCDATA)>
+        <!ELEMENT gas (#PCDATA)>
+        <!ATTLIST tariffs
+                coldwater CDATA #REQUIRED
+                hotwater CDATA #REQUIRED
+                electricity CDATA #REQUIRED
+                gas CDATA #REQUIRED>
+        <!ATTLIST building
+                street CDATA #REQUIRED
+                number CDATA #REQUIRED>
+        <!ATTLIST flat
+                number CDATA #REQUIRED
+                personsquantity CDATA "0"
+                area CDATA #REQUIRED >
+        <!ATTLIST registration
+                month
+                        (1|2|3|4|5|6|7|8|9|10|11|12) #REQUIRED
+                year CDATA #REQUIRED>

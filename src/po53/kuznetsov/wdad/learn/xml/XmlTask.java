@@ -2,8 +2,9 @@ package po53.kuznetsov.wdad.learn.xml;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
+import po53.kuznetsov.wdad.learn.rmi.Flat;
+import po53.kuznetsov.wdad.learn.rmi.Registration;
 
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -14,14 +15,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.*;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class XmlTask {
     private static final String[] TARIFFS_KEYS = new String[]{"coldwater", "hotwater", "electricity", "gas"};
@@ -69,7 +66,7 @@ public class XmlTask {
         try {
             //System.out.println(new File(filename).exists());
             document = getBuilder().parse(filename);
-            System.out.println("document "+ document.getXmlVersion());
+            //System.out.println("document "+ document.getXmlVersion());
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
             throw new RuntimeException("");
@@ -91,8 +88,8 @@ public class XmlTask {
         NamedNodeMap tariffs = getTariffs();
 
         Node building = getUniqueNode(getBuildingExpression(street, buildingNumber), document);
-        System.out.println("document "+document.getTextContent());
-        System.out.println("building "+building.getTextContent());
+        //System.out.println("document "+document.getTextContent());
+        //System.out.println("building "+building.getTextContent());
         Node flat = getUniqueNode(getFlatSearchExpression(flatNumber), building);
         if (flat == null) {
             throw flatNotFoundException(street, buildingNumber, flatNumber);
@@ -101,15 +98,19 @@ public class XmlTask {
         if (registries.size() < 2) {
             return 0; // can not count bill without
         }
+        /*
         for(Node node: registries){
             System.out.println("year " + getYear(node) + " month " + getMonth(node));
         }
+        */
         registries.sort(REGISTRIES_DATE_ORDER);
+        /*
         for(Node node: registries){
             System.out.println("year " + getYear(node) + " month " + getMonth(node));
         }
+        */
         Node lastRegistry = registries.get(registries.size() - 1);
-        System.out.println("last year " + getYear(lastRegistry) + " month " + getMonth(lastRegistry));
+        //System.out.println("last year " + getYear(lastRegistry) + " month " + getMonth(lastRegistry));
         if (!isCurrentMonthRegistry(lastRegistry)) {
             return 0; // no current data
         }
@@ -144,11 +145,11 @@ public class XmlTask {
 
     private List<Node> getRegistritions(Node flat) {
         try {
-            System.out.println("flat "+ flat.getTextContent());
+            //System.out.println("flat "+ flat.getTextContent());
             NodeList nodeList = (NodeList) X_PATH_REGISTRATIONS_EXPRESSION.evaluate(flat, XPathConstants.NODESET);
             int length = nodeList.getLength();
-            System.out.println("size " + length);
-            System.out.println(flat.getTextContent());
+            //System.out.println("size " + length);
+            //System.out.println(flat.getTextContent());
             List<Node> list = new ArrayList<>(length);
             for (int i = 0; i < length; i++) {
                 list.add(nodeList.item(i));
@@ -196,6 +197,38 @@ public class XmlTask {
         return new NoSuchElementException(
                 String.format("No flat with address: street- %s, building number- %d, " +
                         "flat number-%d,", street, buildingNumber, flatNumber));
+    }
+
+    public Flat getFlat(String street, int buildingNumber, int flatNumber) {
+        NamedNodeMap tariffs = getTariffs();
+        Node building = getUniqueNode(getBuildingExpression(street, buildingNumber), document);
+        Node flatNode = getUniqueNode(getFlatSearchExpression(flatNumber), building);
+        if (flatNode == null) {
+            throw flatNotFoundException(street, buildingNumber, flatNumber);
+        }
+        NamedNodeMap attributes = flatNode.getAttributes();
+        double area = Double.parseDouble(attributes.getNamedItem("area").getNodeValue());
+        int personsQuantity =Integer.parseInt(attributes.getNamedItem("personsquantity").getNodeValue());
+        List<Node> registrationNodes = getRegistritions(flatNode);
+        int registrationsQuantity = registrationNodes.size();
+        List<Registration> registrations = new ArrayList<>();
+        for (int i = 0; i < registrationsQuantity; i++) {
+            registrations.add(toRegistration(registrationNodes.get(i)));
+        }
+
+        return new Flat(flatNumber, personsQuantity, area, registrations);
+    }
+
+    private Registration toRegistration(Node node) {
+        NamedNodeMap attributes = node.getAttributes();
+        int month = Integer.parseInt(attributes.getNamedItem("month").getNodeValue());
+        int year = Integer.parseInt(attributes.getNamedItem("year").getNodeValue());
+        Date date = new Date(year, month + 1, 1);
+        double coldwater = Double.parseDouble(getUniqueNode("coldwater", node).getNodeValue());
+        double hotwater = Double.parseDouble(getUniqueNode("hotwater", node).getNodeValue());
+        double electricity = Double.parseDouble(getUniqueNode("electricity", node).getNodeValue());
+        double gas = Double.parseDouble(getUniqueNode("gas", node).getNodeValue());
+        return new Registration(date, coldwater, hotwater, electricity, gas);
     }
 
     private NamedNodeMap getTariffs() {
