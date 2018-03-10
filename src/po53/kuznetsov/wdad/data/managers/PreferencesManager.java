@@ -67,7 +67,7 @@ public class PreferencesManager {
             xPathExpressions.put(REGISTRY_ADDRESS, FIRST_SERVER_REGISTRY_ADDRESS_EXPRESSION);
             xPathExpressions.put(REGISTRY_PORT, FIRST_SERVER_REGISTRY_PORT_EXPRESSION);
             xPathExpressions.put(POLICYPATH, POLICY_PATH_EXPRESSION);
-            xPathExpressions.put(USE_CODE_BASEONLY, USE_CODEBASE_ONLY_EXPRESSION);
+            xPathExpressions.put(USE_CODEBASE_ONLY, USE_CODEBASE_ONLY_EXPRESSION);
             xPathExpressions.put(CLASS_PROVIDER, CLASS_PROVIDER_EXPRESSION);
         } catch (XPathExpressionException e) {
             System.err.println(e.getMessage());
@@ -123,6 +123,19 @@ public class PreferencesManager {
         node.setAttribute("name", name);
         serverNode.appendChild(node);
         rewriteXML();
+    }
+
+    public String getBindedObjectName(String className) {
+        NodeList nodes = getNodes(BINDED_OBJECTS_EXPRESSION);
+        boolean remooved = false;
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            NamedNodeMap attributes = node.getAttributes();
+            if (attributes.getNamedItem("class").getNodeValue().equals(className)) {
+                return attributes.getNamedItem("name").getNodeValue();
+            }
+        }
+        return null;
     }
 
     public void removeBindedObject(String name) {
@@ -188,7 +201,6 @@ public class PreferencesManager {
                 serverNode.removeChild(node);
                 return true;
             }
-
         }
         return false;
     }
