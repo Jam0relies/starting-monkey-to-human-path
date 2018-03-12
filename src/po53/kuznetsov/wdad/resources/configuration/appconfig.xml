@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE appconfig [
-        <!ELEMENT appconfig (rmi)>
+        <!ELEMENT appconfig (rmi, datasource)>
         <!ELEMENT rmi (server, client, classprovider?)>
         <!ELEMENT server ((registry, bindedobject*)+)>
         <!ELEMENT registry (createregistry, registryaddress, registryPort)>
@@ -15,6 +15,15 @@ or valid host name -->
         <!ELEMENT usecodebaseonly (#PCDATA)> <!-- valid values: “yes”, “no” -->
         <!ELEMENT classprovider (#PCDATA)> <!-- valid FS depended path to local
 directory or *jar file, or URL to *.jar file, containing *.class files -->
+        <!ELEMENT datasource (classname, drivertype, hostName, port, DBName,
+                user, pass)>
+        <!ELEMENT classname (#PCDATA)>
+        <!ELEMENT drivertype (#PCDATA)>
+        <!ELEMENT hostName (#PCDATA)>
+        <!ELEMENT port (#PCDATA)>
+        <!ELEMENT DBName (#PCDATA)>
+        <!ELEMENT user (#PCDATA)>
+        <!ELEMENT pass (#PCDATA)>
         <!ATTLIST bindedobject
                 name CDATA #REQUIRED
                 class CDATA #REQUIRED
@@ -35,4 +44,13 @@ directory or *jar file, or URL to *.jar file, containing *.class files -->
         </client>
         <classprovider>http://www.yourhost.free.ru/cp/cp.jar</classprovider>
     </rmi>
+    <datasource>
+        <classname></classname>
+        <drivertype></drivertype>
+        <hostName></hostName>
+        <port></port>
+        <DBName></DBName>
+        <user></user>
+        <pass></pass>
+    </datasource>
 </appconfig>

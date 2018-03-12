@@ -10,4 +10,12 @@ public interface PreferencesConstantManager {
     String USE_CODEBASE_ONLY = "appconfig.rmi.server.registry.usecodebaseonly";
 
     String CLASS_PROVIDER = "appconfig.rmi.classprovider";
+
+    String CLASSNAME = "appconfig.datasource.classname";
+    String DRIVER_TYPE = "appconfig.datasource.drivertype";
+    String HOSTNAME =  "appconfig.datasource.hostName";
+    String PORT = "appconfig.datasource.port";
+    String DB_NAME = "appconfig.datasource.DBName";
+    String USER = "appconfig.datasource.user";
+    String PASS = "appconfig.datasource.pass";
 }

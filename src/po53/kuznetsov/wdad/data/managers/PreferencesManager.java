@@ -37,6 +37,13 @@ public class PreferencesManager {
     private static XPathExpression FIRST_SERVER_CREATE_REGISTRY_EXPRESSION;
     private static XPathExpression FIRST_SERVER_REGISTRY_ADDRESS_EXPRESSION;
     private static XPathExpression FIRST_SERVER_REGISTRY_PORT_EXPRESSION;
+    private static XPathExpression CLASSNAME_EXPRESSION;
+    private static XPathExpression DRIVER_TYPE_EXPRESSION;
+    private static XPathExpression HOSTNAME_EXPRESSION;
+    private static XPathExpression PORT_EXPRESSION;
+    private static XPathExpression DB_NAME_EXPRESSION;
+    private static XPathExpression USER_EXPRESSION;
+    private static XPathExpression PASS_EXPRESSION;
     private static Transformer TRANSFORMER;
     private static Map<String, XPathExpression> xPathExpressions;
 
@@ -54,6 +61,13 @@ public class PreferencesManager {
             USE_CODEBASE_ONLY_EXPRESSION = XPATH.compile("/appconfig/rmi/client/usecodebaseonly");
             BINDED_OBJECTS_EXPRESSION = XPATH.compile("/appconfig/rmi/server/bindedobject");
             SERVER_EXPRESSION = XPATH.compile("/appconfig/rmi/server[1]");
+            CLASSNAME_EXPRESSION = XPATH.compile("/appconfig/datasource/classname");
+            DRIVER_TYPE_EXPRESSION = XPATH.compile("/appconfig/datasource/drivertype");
+            HOSTNAME_EXPRESSION = XPATH.compile("/appconfig/datasource/hostName");
+            PORT_EXPRESSION = XPATH.compile("/appconfig/datasource/port");
+            DB_NAME_EXPRESSION = XPATH.compile("/appconfig/datasource/DBName");
+            USER_EXPRESSION = XPATH.compile("/appconfig/datasource/user");
+            PASS_EXPRESSION = XPATH.compile("/appconfig/datasource/pass");
 
             FIRST_SERVER_CREATE_REGISTRY_EXPRESSION = XPATH
                     .compile("/appconfig/rmi/server[1]/registry/createregistry/text()");
