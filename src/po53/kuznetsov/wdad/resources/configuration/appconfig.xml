@@ -45,12 +45,12 @@ directory or *jar file, or URL to *.jar file, containing *.class files -->
         <classprovider>http://www.yourhost.free.ru/cp/cp.jar</classprovider>
     </rmi>
     <datasource>
-        <classname></classname>
+        <classname>com.mysql.jdbc.jdbc2.optional.MysqlDataSource</classname>
         <drivertype></drivertype>
-        <hostName></hostName>
-        <port></port>
-        <DBName></DBName>
-        <user></user>
-        <pass></pass>
+        <hostName>localhost</hostName>
+        <port>3306</port>
+        <DBName>housekeeper</DBName>
+        <user>admin</user>
+        <pass>admin</pass>
     </datasource>
 </appconfig>
