@@ -83,6 +83,13 @@ public class PreferencesManager {
             xPathExpressions.put(POLICYPATH, POLICY_PATH_EXPRESSION);
             xPathExpressions.put(USE_CODEBASE_ONLY, USE_CODEBASE_ONLY_EXPRESSION);
             xPathExpressions.put(CLASS_PROVIDER, CLASS_PROVIDER_EXPRESSION);
+            xPathExpressions.put(CLASSNAME, CLASSNAME_EXPRESSION);
+            xPathExpressions.put(DRIVER_TYPE, DRIVER_TYPE_EXPRESSION);
+            xPathExpressions.put(HOSTNAME, HOSTNAME_EXPRESSION);
+            xPathExpressions.put(PORT, PORT_EXPRESSION);
+            xPathExpressions.put(DB_NAME, DB_NAME_EXPRESSION);
+            xPathExpressions.put(USER, USER_EXPRESSION);
+            xPathExpressions.put(PASS, PASS_EXPRESSION);
         } catch (XPathExpressionException e) {
             System.err.println(e.getMessage());
         }
