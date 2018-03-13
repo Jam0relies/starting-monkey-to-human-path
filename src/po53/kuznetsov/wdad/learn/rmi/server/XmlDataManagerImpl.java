@@ -1,7 +1,7 @@
 package po53.kuznetsov.wdad.learn.rmi.server;
 
 import po53.kuznetsov.wdad.learn.rmi.Flat;
-import po53.kuznetsov.wdad.learn.rmi.client.XmlDataManager;
+import po53.kuznetsov.wdad.data.managers.DataManager;
 import po53.kuznetsov.wdad.learn.rmi.Building;
 import po53.kuznetsov.wdad.learn.rmi.Registration;
 import po53.kuznetsov.wdad.learn.xml.XmlTask;
@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 
-class XmlDataManagerImpl extends UnicastRemoteObject implements XmlDataManager {
+class XmlDataManagerImpl extends UnicastRemoteObject implements DataManager {
     private static final String FILENAME = "out\\production\\starting-monkey-to-human-path" +
             "\\po53\\kuznetsov\\wdad\\learn\\rmi\\server\\data.xml";
     XmlTask xmlTask;

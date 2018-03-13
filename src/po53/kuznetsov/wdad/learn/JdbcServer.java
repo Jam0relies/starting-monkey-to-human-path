@@ -1,14 +1,15 @@
-package po53.kuznetsov.wdad.learn.rmi.server;
+package po53.kuznetsov.wdad.learn;
 
-import po53.kuznetsov.wdad.data.managers.PreferencesManager;
 import po53.kuznetsov.wdad.data.managers.DataManager;
+import po53.kuznetsov.wdad.data.managers.JDBCDataManager;
+import po53.kuznetsov.wdad.data.managers.PreferencesManager;
 import po53.kuznetsov.wdad.utils.PreferencesConstantManager;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class Server {
+public class JdbcServer {
     /*путь к файлу с политиками безопасности. В примере указан относительный путь - относительно текущей директории. Чтобы файл был найден без проблем, он должен находиться рядом с файлом Server.class (именно *.class, а не *.java). Но можете использовать и абсолютный путь.
      */
     static final private String SECURITY_POLICY_PATH = "out\\production\\starting-monkey-to-human-path\\po53\\kuznetsov\\wdad\\learn\\rmi\\security.policy";
@@ -17,7 +18,7 @@ public class Server {
 2) Загружаемся по http - тогда URL должна указывать на *.jar файл. Например, http://mastefanov.com/test/codebase/base.jar
 */
 
-    private static final String REMOTE_NAME = "XmlDataManager";
+    private static final String REMOTE_NAME = "JDBCDataManager";
 
     public static void main(String[] args) {
         PreferencesManager prefManager = PreferencesManager.getInstance();
@@ -38,10 +39,14 @@ public class Server {
         }
         try {
             System.out.println("export");
-            DataManager xdmi = new XmlDataManagerImpl();
+            DataManager xdmi = new JDBCDataManager();
             registry.rebind(REMOTE_NAME, xdmi);
             prefManager.addBindedObject(REMOTE_NAME, DataManager.class.getCanonicalName());
             System.out.println("idle");
+            /*
+            while(true){
+                Thread.sleep(1000);
+            }*/
         } catch (Exception ex) {
             System.err.println("cant export");
             ex.printStackTrace();

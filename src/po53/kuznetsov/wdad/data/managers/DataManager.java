@@ -1,4 +1,4 @@
-package po53.kuznetsov.wdad.learn.rmi.client;
+package po53.kuznetsov.wdad.data.managers;
 
 import po53.kuznetsov.wdad.learn.rmi.Building;
 import po53.kuznetsov.wdad.learn.rmi.Flat;
@@ -8,7 +8,7 @@ import javax.xml.crypto.dsig.TransformException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface XmlDataManager extends Remote {
+public interface DataManager extends Remote {
     // возвращающает cумму платежа за текущий месяц.
     double getBill(Building building, int flatNumber) throws RemoteException, TransformException;
 

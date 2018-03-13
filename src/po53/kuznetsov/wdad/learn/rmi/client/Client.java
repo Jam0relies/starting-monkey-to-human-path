@@ -1,5 +1,6 @@
 package po53.kuznetsov.wdad.learn.rmi.client;
 
+import po53.kuznetsov.wdad.data.managers.DataManager;
 import po53.kuznetsov.wdad.data.managers.PreferencesManager;
 import po53.kuznetsov.wdad.learn.rmi.Building;
 import po53.kuznetsov.wdad.learn.rmi.Flat;
@@ -32,9 +33,9 @@ public class Client {
             System.out.println(s);
         }
 
-        String rmiName = prefManager.getBindedObjectName(XmlDataManager.class.getCanonicalName());
+        String rmiName = prefManager.getBindedObjectName(DataManager.class.getCanonicalName());
         System.out.println("RMI name:" + rmiName);
-        XmlDataManager xmlDataManager = (XmlDataManager) registry.lookup(rmiName);
+        DataManager xmlDataManager = (DataManager) registry.lookup(rmiName);
 
         Building building = new Building("Some street", "1");
         xmlDataManager.addRegistration(building, 1, new Registration(Date.from(Instant.now()),
