@@ -37,12 +37,12 @@ public class Client {
         System.out.println("RMI name:" + rmiName);
         DataManager xmlDataManager = (DataManager) registry.lookup(rmiName);
 
-        Building building = new Building("Some street", "1");
+        Building building = new Building("Самарская", "70");
         xmlDataManager.addRegistration(building, 1, new Registration(Date.from(Instant.now()),
                 6, 7, 8, 9));
         xmlDataManager.setTariff("gas", 5);
         System.out.println(xmlDataManager.getBill(building, 1));
-        Flat flat = xmlDataManager.getFlat(building, 2);
+        Flat flat = xmlDataManager.getFlat(building, 1);
         System.out.println(flat.getPersonsQuantity());
     }
 }

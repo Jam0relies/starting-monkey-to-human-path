@@ -10,6 +10,10 @@ public class Registration implements Serializable {
     private double electricity;
     private double gas;
 
+    public Registration() {
+        this(null, 0, 0, 0, 0);
+    }
+
     public Registration(Date date, double coldwater, double hotwater, double electricity, double gas) {
         this.date = date;
         this.coldwater = coldwater;

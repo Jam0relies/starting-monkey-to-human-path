@@ -4,11 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 public class Tariffs implements Serializable {
-    static final HashMap<String, Double> values;
-    static final String COLDWATER_KEY = "coldwater";
-    static final String HOTWATER_KEY = "hotwater";
-    static final String ELECTRICITY_KEY = "electricity";
-    static final String GAS_KEY = "gas";
+    public static final HashMap<String, Double> values;
 
     static {
         values = new HashMap<>();
