@@ -125,15 +125,9 @@ public class JDBCDataManager extends UnicastRemoteObject implements DataManager 
                 return flat;
             } catch (SQLException e) {
                 e.printStackTrace();
-                if (conn != null) {
-                    try {
-                        System.err.print("Transaction is being rolled back");
-                        conn.rollback();
-                    } catch (SQLException excep) {
-                        excep.printStackTrace();
-                    }
-                    throw new RemoteException("SQLException", e);
-                }
+                System.err.print("Transaction is being rolled back");
+                throw new RemoteException("SQLException", e);
+
             } finally {
                 if (conn != null) {
                     conn.close();
@@ -149,7 +143,7 @@ public class JDBCDataManager extends UnicastRemoteObject implements DataManager 
             e.printStackTrace();
             throw new RemoteException("SQLException", e);
         }
-        return null;
+        //return null;
     }
 
     @Override
