@@ -1,0 +1,127 @@
+:root{
+    --header-margin: 3px;
+}
+
+body {
+    font-family: Arial, serif;
+    margin: 0 auto;
+}
+
+header {
+    background-color: black;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    margin-left: 5px;
+}
+.user_icon{
+    margin: auto;
+    /*float: right;*/
+}
+
+.company_info {
+    /*position: absolute;*/
+    text-align: center;
+    /*margin: var(--header-margin);*/
+}
+.company_name{
+    font-size: large;
+}
+.company_specialisation{
+    font-size: small;
+}
+
+.user_info {
+    font-size: small;
+    text-align: right;
+    margin-right: 5px;
+    display: inherit;
+}
+.user_text_info{
+    margin: auto;
+}
+.date_prefix{
+    display: inline-block;
+}
+.date_value{
+    display: inline-block;
+    font-weight: bold;
+}
+
+.menu__item {
+}
+.main{
+    display: flex;
+    flex-direction: column;
+    /*justify-content: space-between;*/
+    align-items: center;
+    font-size: small;
+}
+.column{
+    min-width: 350px;
+    border: 1px solid gray;
+}
+.flat_selector{
+    border-bottom: inherit;
+}
+.buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    border-color: inherit;
+}
+
+button{
+    background-color: white;
+    border: solid 1px;
+    border-color: inherit;
+    margin: 0px;
+}
+.results{
+    color: gray;
+}
+.record{
+    /*display: flex;*/
+    /*flex-direction: row;*/
+    /*justify-content: space-between;*/
+}
+.record_time{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.record_date{
+    display: inline-block;
+    font-weight: bold;
+    text-align: left;
+    align-self: flex-end;
+    color: black;
+    margin-left: 17px;
+}
+.record_age_block{
+    align-self: right;
+    display: inline-block;
+}
+.record_age{
+    /*align-self: right;*/
+    display: inline-block;
+    text-align: right;
+    align-self: flex-end;
+}
+.record_button{
+    border: none;
+    font-size: xx-large;
+    color: inherit;
+}
+.amounts{
+    font-size: xx-small;
+}
+.value_block{
+    display: inline-block;
+    margin: 17px;
+}
